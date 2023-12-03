@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Providers } from "@/components/redux/provider";
+import Navbar from './components/Navbar';
+import { Plus_Jakarta_Sans } from "next/font/google";
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+
+const pjs = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,8 +18,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className={pjs.className}>
+      <body className='pb-24 h-screen overflow-hidden'>
+        <Providers>
+          <Navbar /> 
+          {/* render modal component */}
+          
+          {children}
+        </Providers>
+      </body>
     </html>
-  )
+  );
 }
+
