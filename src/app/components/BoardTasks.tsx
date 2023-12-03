@@ -57,7 +57,7 @@ export default function BoardTasks() {
   }, [data, currentBoardTitle]);
 
 
- const handleDragEnd = async ({ destination, source }) => {
+ const handleDragEnd = async ({ destination, source }: any) => {
    // Check if the destination is not null (i.e., it was dropped in a valid droppable)
    if (!destination) return;
    
