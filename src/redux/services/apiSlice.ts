@@ -4,33 +4,55 @@ import { getSession } from "next-auth/react";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/components/app/utils/firebaseConfig";
 
+
+export interface SingleBoardData {
+  id: string;
+  name: string;
+  columns: {id: string, name: string, tasks: {id: string, status: string, title: string }[] }[];
+}
+
+export type Boards = { boards: SingleBoardData[]};
+export type BoardsArray = Boards[];
+
+export interface Score {
+  id?: string;
+  name: string;
+  time: number;
+}
+
+export interface ScoresTable {
+  id: string;
+  levelId: string;
+  scores?: Score[];
+}
+
+export type ScoresTables = ScoresTable[];
+
 export const fireStoreApi = createApi({
   reducerPath: "firestoreApi",
   baseQuery: fakeBaseQuery(),
   tagTypes: ["Tasks"],
   endpoints: (builder) => ({
-    fetchDataFromDb: builder.query<{ [key: string]: any }[], void>({
+    fetchDataFromDb: builder.query<{[key: string]: any}[], void>({
       async queryFn() {
         try {
           const session = await getSession();
-          if (session?.user) {
-            const { user } = session;
-            const ref = collection(db, `users/${user.email}/tasks`);
+            const { user } = session!;
+            const ref = collection(db, `users/${user?.email}/tasks`);
             const querySnapshot = await getDocs(ref);
-            return { data: querySnapshot.docs.map((doc) => doc.data()) };
-          }
-        } catch (e) {
-          return { error: e };
+            const boards = querySnapshot.docs.map((doc) => {
+              console.log(doc.data())
+              return doc.data()});
+            return { data: boards };
+        } catch (e: any) {
+          return { error: e.message };
         }
       },
       providesTags: ["Tasks"],
     }),
     // endpoint for CRUD actions
-    updateBoardToDb: builder.mutation<
-      { data: null } | { error: unknown },
-      { [key: string]: any }
-    >({
-      async queryFn(boardData) {
+    updateBoardToDb: builder.mutation({
+      async queryFn(arg, api, extraOptions, baseQuery) {
         try {
           const session = await getSession();
           if (session?.user) {
@@ -41,12 +63,12 @@ export const fireStoreApi = createApi({
               return doc.id;
             });
             await updateDoc(doc(db, `users/${user.email}/tasks/${boardId}`), {
-              boards: boardData,
+              boards: arg,
             });
           }
-          return { data: null };
+          return Promise.resolve({ data: null });
         } catch (e) {
-          return { error: e };
+          return Promise.resolve({ error: e });
         }
       },
       invalidatesTags: ["Tasks"], // this will be used to invalidate the initially fetched data. 

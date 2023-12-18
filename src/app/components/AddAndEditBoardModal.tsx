@@ -186,9 +186,9 @@ export default function AddAndEditBoardModal() {
         );
         const updatedBoard = {
           ...boards.boards[activeBoardIndex],
-          name: boardData?.name,
-          columns: boardData?.columns,
-        };
+          name: boardData!.name,
+          columns: boardData!.columns,
+        } ;
         boardsCopy[activeBoardIndex] = updatedBoard;
         updateBoardToDb(boardsCopy);
       }

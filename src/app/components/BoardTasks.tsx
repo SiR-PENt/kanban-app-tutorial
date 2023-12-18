@@ -185,7 +185,7 @@ export default function BoardTasks() {
                                               onClick={() =>
                                                 dispatch(
                                                   openDeleteBoardAndTaskModal({
-                                                    variant: "Edit Task",
+                                                    variant: "Delete this task?",
                                                     title,
                                                     status,
                                                     index,

@@ -21,9 +21,7 @@ export default function RootLayout({
     <html lang="en" className={pjs.className}>
       <body className='pb-24 h-screen overflow-hidden'>
         <Providers>
-          <Navbar /> 
-          {/* render modal component */}
-          
+          <Navbar />        
           {children}
         </Providers>
       </body>
