@@ -151,7 +151,6 @@ export default function BoardTasks() {
                               (column.tasks.length > 0 ? (
                                 column.tasks.map((task, index) => {
                                   const { id, title, status } = task;
-                                  console.log(title, id);
                                   return (
                                     <Draggable
                                       key={id}
