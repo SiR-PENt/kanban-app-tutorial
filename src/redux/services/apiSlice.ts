@@ -41,7 +41,6 @@ export const fireStoreApi = createApi({
             const ref = collection(db, `users/${user?.email}/tasks`);
             const querySnapshot = await getDocs(ref);
             const boards = querySnapshot.docs.map((doc) => {
-              console.log(doc.data())
               return doc.data()});
             return { data: boards };
         } catch (e: any) {
@@ -52,7 +51,7 @@ export const fireStoreApi = createApi({
     }),
     // endpoint for CRUD actions
     updateBoardToDb: builder.mutation({
-      async queryFn(arg, api, extraOptions, baseQuery) {
+      async queryFn(arg) {
         try {
           const session = await getSession();
           if (session?.user) {

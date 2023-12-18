@@ -31,14 +31,14 @@ interface Column {
 export default function BoardTasks() {
   // Get loading state and data from the useFetchDataFromDbQuery endpoint
   const { isLoading, data } = useFetchDataFromDbQuery();
-  const [ updateBoardToDb ] = useUpdateBoardToDbMutation();
+  const [updateBoardToDb] = useUpdateBoardToDbMutation();
   // Manage column data in columns state
   const [columns, setColumns] = useState<Column[]>([]);
   // Get active board name from the redux store
   const currentBoardTitle = useAppSelector(getCurrentBoardName);
   const dispatch = useAppDispatch();
   // check if it's the first render
-  const initialRender = useRef(true)
+  const initialRender = useRef(true);
   // Once data fetches successfully, this function in the useEffect runs
   useEffect(() => {
     if (data !== undefined) {
@@ -56,70 +56,68 @@ export default function BoardTasks() {
     }
   }, [data, currentBoardTitle]);
 
+  const handleDragEnd = async ({ destination, source }: any) => {
+    // Check if the destination is not null (i.e., it was dropped in a valid droppable)
+    if (!destination) return;
 
- const handleDragEnd = async ({ destination, source }: any) => {
-   // Check if the destination is not null (i.e., it was dropped in a valid droppable)
-   if (!destination) return;
-   
-  // get a deep nested copy of the columns state
-   const newColumns = columns.map((column) => ({
-     ...column,
-     tasks: [...column.tasks], // Create a new array for tasks
-   }));
+    // get a deep nested copy of the columns state
+    const newColumns = columns.map((column) => ({
+      ...column,
+      tasks: [...column.tasks], // Create a new array for tasks
+    }));
 
-   // Find the source and destination columns based on their droppableIds
-   const sourceColumnIndex = newColumns.findIndex(
-     (col) => col.id === source.droppableId
-   );
-   const destinationColumnIndex = newColumns.findIndex(
-     (col) => col.id === destination.droppableId
-   );
+    // Find the source and destination columns based on their droppableIds
+    const sourceColumnIndex = newColumns.findIndex(
+      (col) => col.id === source.droppableId
+    );
+    const destinationColumnIndex = newColumns.findIndex(
+      (col) => col.id === destination.droppableId
+    );
 
-   // Task that was dragged
-   const itemMoved = newColumns[sourceColumnIndex]?.tasks[source.index];
+    // Task that was dragged
+    const itemMoved = newColumns[sourceColumnIndex]?.tasks[source.index];
 
-   // Remove from its source
-   newColumns[sourceColumnIndex].tasks.splice(source.index, 1);
+    // Remove from its source
+    newColumns[sourceColumnIndex].tasks.splice(source.index, 1);
 
-   // Insert into its destination
-   newColumns[destinationColumnIndex].tasks.splice(
-     destination.index,
-     0,
-     itemMoved
-   );
+    // Insert into its destination
+    newColumns[destinationColumnIndex].tasks.splice(
+      destination.index,
+      0,
+      itemMoved
+    );
 
-   // Update the state
-   setColumns(newColumns);
- };
+    // Update the state
+    setColumns(newColumns);
+  };
 
- useEffect(() => {
-   // Check if it's the initial render, to avoid sending the data to the backend on mount
-   if (!initialRender.current) {
-     // Update the backend with the new order
-     try {
-       if (data) {
-         const [boards] = data;
-         const boardsCopy = [...boards.boards];
-         const activeBoardIndex = boardsCopy.findIndex(
-           (board: { name: string }) => board.name === currentBoardTitle
-         );
-         const updatedBoard = {
-           ...boards.boards[activeBoardIndex],
-           columns,
-         };
-         boardsCopy[activeBoardIndex] = updatedBoard;
-         updateBoardToDb(boardsCopy);
-       }
-     } catch (error) {
-       // Handle error
-       console.error("Error updating board:", error);
-     }
-   } else {
-     // Set initial render to false after the first render
-     initialRender.current = false;
-   }
- }, [columns]);
-
+  useEffect(() => {
+    // Check if it's the initial render, to avoid sending the data to the backend on mount
+    if (!initialRender.current) {
+      // Update the backend with the new order
+      try {
+        if (data) {
+          const [boards] = data;
+          const boardsCopy = [...boards.boards];
+          const activeBoardIndex = boardsCopy.findIndex(
+            (board: { name: string }) => board.name === currentBoardTitle
+          );
+          const updatedBoard = {
+            ...boards.boards[activeBoardIndex],
+            columns,
+          };
+          boardsCopy[activeBoardIndex] = updatedBoard;
+          updateBoardToDb(boardsCopy);
+        }
+      } catch (error) {
+        // Handle error
+        console.error("Error updating board:", error);
+      }
+    } else {
+      // Set initial render to false after the first render
+      initialRender.current = false;
+    }
+  }, [columns]);
 
   return (
     <div className="overflow-x-auto overflow-y-auto w-full p-6 bg-stone-200">
@@ -153,6 +151,7 @@ export default function BoardTasks() {
                               (column.tasks.length > 0 ? (
                                 column.tasks.map((task, index) => {
                                   const { id, title, status } = task;
+                                  console.log(title, id);
                                   return (
                                     <Draggable
                                       key={id}
@@ -185,7 +184,8 @@ export default function BoardTasks() {
                                               onClick={() =>
                                                 dispatch(
                                                   openDeleteBoardAndTaskModal({
-                                                    variant: "Delete this task?",
+                                                    variant:
+                                                      "Delete this task?",
                                                     title,
                                                     status,
                                                     index,
