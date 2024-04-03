@@ -132,7 +132,7 @@ export default function BoardTasks() {
           {columns.length > 0 ? (
             <DragDropContext onDragEnd={handleDragEnd}>
               <div className="flex space-x-6">
-                {columns.map((column, index) => {
+                {columns.map((column, _index) => {
                   const { id, name } = column;
                   return (
                     <div key={id} className="w-[17.5rem] shrink-0">

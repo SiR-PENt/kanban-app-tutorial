@@ -14,7 +14,8 @@ import {
 } from "@/components/redux/services/apiSlice";
 import { FaTimes } from "react-icons/fa";
 import { id } from '../utils/data'
-// define types for boarddata
+
+// define types for board data
 interface IAddBoardData {
   id: string,
   name: string;
@@ -24,6 +25,7 @@ interface IAddBoardData {
     columns?: { name: string; tasks?: { [key: string]: any }[] };
   }[];
 }
+
 // dummy add board data for the "Add board" modal
 let addBoardData = {
   id: id(),
@@ -36,6 +38,7 @@ let addBoardData = {
     },
   ],
 };
+
 export default function AddAndEditBoardModal() {
   //manage the board data state
   const [boardData, setBoardData] = useState<IAddBoardData>();
@@ -62,10 +65,11 @@ export default function AddAndEditBoardModal() {
   // Effect to set initial data for the modal based on the variant
   useEffect(() => {
     if (data) {
+      
       if (isVariantAdd) {
         setBoardData(addBoardData);
       } else {
-        const activeBoard = data[0].boards.find(
+        const activeBoard = data[0]?.boards.find(
           (board: { name: string }) => board.name === currentBoardTitle
         );
         setBoardData(activeBoard);
@@ -91,6 +95,7 @@ export default function AddAndEditBoardModal() {
   };
 
   // Handler for column name change. These kind of functions are called closures
+
   const handleColumnNameChange = (index: number) => {
     return function (e: React.ChangeEvent<HTMLInputElement>) {
       // handle change for create new board modal
@@ -109,6 +114,7 @@ export default function AddAndEditBoardModal() {
 
   // Handler for adding a new column to the form
   const handleAddNewColumn = () => {
+    // max columns we want to have in a board is 7
     if (boardData && boardData.columns.length < 6) {
       // Make a copy of the existing boardData
       const updatedBoardData = { ...boardData };
@@ -134,13 +140,17 @@ export default function AddAndEditBoardModal() {
   // Handler for adding a new board to the database
   const handleAddNewBoardToDb = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    
+    // check if any of the column names are empty before submiting
     const emptyColumnStringChecker = boardData?.columns.some(
       (column) => column.name === ""
     ); 
+
     //condition to run if the board name is empty
     if (boardData?.name === "") {
       setIsBoardNameEmpty(true);
     }
+
     //if any of the column names is empty, update the emptyColumnIndex with its index
     if (emptyColumnStringChecker) {
       const emptyColumn = boardData?.columns.findIndex(
@@ -148,6 +158,7 @@ export default function AddAndEditBoardModal() {
       );
       setEmptyColumnIndex(emptyColumn);
     }
+
     if (boardData?.name !== "" && !emptyColumnStringChecker) {
       //submit to the database after verifying that the board name and none of the column names aren't empty
       if (data) {

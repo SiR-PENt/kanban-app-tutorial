@@ -19,7 +19,7 @@ export default function Navbar() {
   useEffect(() => {
     if (data) {
       // When a user signs in, set the currentBoardName to the first board's name
-      const activeBoard = data[0].boards[0];
+      const activeBoard = data[0]?.boards[0];
       dispatch(setCurrentBoardName(activeBoard.name));
     }
   }, [data]);

@@ -5,29 +5,6 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/components/app/utils/firebaseConfig";
 
 
-export interface SingleBoardData {
-  id: string;
-  name: string;
-  columns: {id: string, name: string, tasks: {id: string, status: string, title: string }[] }[];
-}
-
-export type Boards = { boards: SingleBoardData[]};
-export type BoardsArray = Boards[];
-
-export interface Score {
-  id?: string;
-  name: string;
-  time: number;
-}
-
-export interface ScoresTable {
-  id: string;
-  levelId: string;
-  scores?: Score[];
-}
-
-export type ScoresTables = ScoresTable[];
-
 export const fireStoreApi = createApi({
   reducerPath: "firestoreApi",
   baseQuery: fakeBaseQuery(),
@@ -67,7 +44,7 @@ export const fireStoreApi = createApi({
           }
           return Promise.resolve({ data: null });
         } catch (e) {
-          return Promise.resolve({ error: e });
+          return Promise.reject({ error: e });
         }
       },
       invalidatesTags: ["Tasks"], // this will be used to invalidate the initially fetched data. 

@@ -31,13 +31,14 @@ let initialTaskData: ITaskData = {
 };
 
 export default function AddOrEditTaskModal() {
+  
   let { data } = useFetchDataFromDbQuery();
   let [updateBoardToDb, { isLoading }] = useUpdateBoardToDbMutation();
   const [taskData, setTaskData] = useState<ITaskData>();
   const [isTaskTitleEmpty, setIsTaskTitleEmpty] = useState<boolean>();
   const [isTaskStatusEmpty, setIsTaskStatusEmpty] = useState<boolean>();
-  const [columnNames, setColumnNames] = useState<[]>();
   const [statusExists, setStatusExists] = useState<boolean>(true);
+  const [columnNames, setColumnNames] = useState<[]>();
   const dispatch = useAppDispatch();
   const isModalOpen = useAppSelector(getAddAndEditTaskModalValue);
   const modalVariant = useAppSelector(getAddAndEditTaskModalVariantValue);
@@ -52,7 +53,7 @@ export default function AddOrEditTaskModal() {
   // Effect to set initial data for the modal based on the variant
   useEffect(() => {
     if (data) {
-      const activeBoard = data[0].boards.find(
+      const activeBoard = data[0]?.boards.find(
         (board: { name: string }) => board.name === currentBoardTitle
       );
       if (activeBoard) {
@@ -60,16 +61,18 @@ export default function AddOrEditTaskModal() {
         const columnNames = columns.map(
           (column: { name: string }) => column.name
         );
+
         if (columnNames) {
           setColumnNames(columnNames);
         }
+
         if (isVariantAdd) {
           setTaskData(initialTaskData);
-        } else {
-          const columnTasks = columns.map(
-            (column: { tasks: [] }) => column.tasks
-          );
-          const activeTask = columnTasks
+        }
+        
+        else {
+          const activeTask = columns
+            .map((column: { tasks: [] }) => column.tasks)
             .flat()
             .find((task: { title: string }) => task.title === currentTaskTitle);
           setTaskData(activeTask);
@@ -106,21 +109,27 @@ export default function AddOrEditTaskModal() {
 
   // Handler to add new task to the db
   const handleAddNewTaskToDb = (e: React.FormEvent<HTMLButtonElement>) => {
+
     e.preventDefault();
     const { title, status } = taskData!;
+
     if (!title) {
       setIsTaskTitleEmpty(true);
     }
+
     if (!status) {
       setIsTaskStatusEmpty(true);
     }
+
     // check if the status input exists among the existing columns
     const doesStatusExists = columnNames?.some(
       (column) => column === taskData?.status
     );
+
     if (!doesStatusExists) {
       setStatusExists(false);
     }
+
     // if all conditions are met
     if (title && status && doesStatusExists) {
       if (data) {

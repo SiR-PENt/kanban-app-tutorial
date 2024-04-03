@@ -27,6 +27,7 @@ export default function Home() {
   };
 
   const handleAddDoc = async () => {
+    if(!userDetails) return
     if (userDetails) {
       // Execute code inside curly braces only when `userDetails` is true.
 

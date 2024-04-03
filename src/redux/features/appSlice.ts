@@ -17,8 +17,7 @@ const initialState = {
     variant: "",
     title: '',
     status: "",
-    index: -1,
-    
+    index: -1, 
   }, 
 };
 
@@ -99,6 +98,7 @@ export const getDeleteBoardAndTaskModalStatus = (state: RootState) =>
 // Selector function to retrieve title state value
 export const getDeleteBoardAndTaskModalIndex = (state: RootState) =>
   state.features.isDeleteBoardAndTaskModal.index;
+  
 export const getDeleteBoardAndTaskModalTitle = (state: RootState) =>
   state.features.isDeleteBoardAndTaskModal.title;
 
